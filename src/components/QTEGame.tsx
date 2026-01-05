@@ -36,7 +36,7 @@ const QTE_EVENTS: QTEEvent[] = [
 ];
 
 // 干擾影片出現的時間點（秒）- 更密集
-const DISTRACTION_TIMES = [5, 10, 16, 22, 30, 37, 44];
+const DISTRACTION_TIMES = [4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46];
 
 // 干擾影片列表
 const DISTRACTION_VIDEOS = ["/溝通溝通.mp4", "/哭蕊宿頭.mp4"];
@@ -63,6 +63,9 @@ interface PopupVideoState {
     x: number;
     y: number;
     showClose: boolean;
+    autoCloseOnEnd: boolean; // 播完自動關閉
+    isDistraction: boolean; // 是否為干擾影片（關閉可加分）
+    loop: boolean; // 是否循環播放
 }
 
 interface ActiveQTE {
@@ -145,17 +148,26 @@ export function QTEGame({ onComplete }: QTEGameProps) {
     });
 
     // 添加彈出影片
-    const addPopupVideo = useCallback((src: string, showClose: boolean) => {
+    const addPopupVideo = useCallback((src: string, options: { showClose: boolean; autoCloseOnEnd: boolean; isDistraction: boolean; loop: boolean }) => {
         const pos = getRandomPosition();
         const id = popupIdRef.current++;
-        setPopupVideos((prev) => [...prev, { id, src, ...pos, showClose }]);
+        setPopupVideos((prev) => [...prev, { id, src, ...pos, ...options }]);
         return id;
     }, []);
 
-    // 移除彈出影片
-    const removePopupVideo = useCallback((id: number) => {
+    // 移除彈出影片（手動關閉干擾影片會 +1 分）
+    const removePopupVideo = useCallback((id: number, addScore: boolean = false) => {
         setPopupVideos((prev) => prev.filter((v) => v.id !== id));
-    }, []);
+        if (addScore) {
+            setScore((prev) => {
+                const next = prev + 1;
+                if (next >= 20) {
+                    onComplete();
+                }
+                return next;
+            });
+        }
+    }, [onComplete]);
 
     // 處理 QTE 成功
     const handleQTESuccess = useCallback((index: number) => {
@@ -196,21 +208,16 @@ export function QTEGame({ onComplete }: QTEGameProps) {
             setActiveQTEs((prev) => prev.map((qte) => (qte.index === index ? { ...qte, result: "fail" } : qte)));
             setCompletedQTEs((prev) => [...prev, index]);
 
-            // 隨機彈出失敗影片
+            // 隨機彈出失敗影片（懲罰：不能關閉，播完自動消失，不循環）
             const randomVideo = FAIL_VIDEOS[Math.floor(Math.random() * FAIL_VIDEOS.length)];
-            const popupId = addPopupVideo(randomVideo, false);
-
-            // 3秒後自動消失
-            setTimeout(() => {
-                removePopupVideo(popupId);
-            }, 3000);
+            addPopupVideo(randomVideo, { showClose: false, autoCloseOnEnd: true, isDistraction: false, loop: false });
 
             // 移除這個 QTE
             setTimeout(() => {
                 setActiveQTEs((prev) => prev.filter((qte) => qte.index !== index));
             }, 300);
         },
-        [addPopupVideo, removePopupVideo]
+        [addPopupVideo]
     );
 
     // 監聽影片時間
@@ -272,9 +279,9 @@ export function QTEGame({ onComplete }: QTEGameProps) {
             DISTRACTION_TIMES.forEach((time, index) => {
                 if (!triggeredDistractions.includes(index) && currentTime >= time && currentTime < time + 0.5) {
                     setTriggeredDistractions((prev) => [...prev, index]);
-                    // 隨機選擇干擾影片
+                    // 隨機選擇干擾影片（可關閉，關閉+1分，循環播放直到關閉）
                     const randomVideo = DISTRACTION_VIDEOS[Math.floor(Math.random() * DISTRACTION_VIDEOS.length)];
-                    addPopupVideo(randomVideo, true);
+                    addPopupVideo(randomVideo, { showClose: true, autoCloseOnEnd: false, isDistraction: true, loop: true });
                 }
             });
         };
@@ -407,7 +414,7 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                 animate={{ opacity: 1 }}
             />
 
-            {/* QTE 提示 - 支援多個同時顯示 */}
+            {/* QTE 提示 - 支援多個同時顯示，可點擊（手機支援） */}
             <AnimatePresence>
                 {activeQTEs.map((qte) => (
                     <motion.div
@@ -426,6 +433,13 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                         }}
                     >
                         <motion.div
+                            onClick={() => {
+                                if (qte.result === null) {
+                                    handleQTESuccess(qte.index);
+                                }
+                            }}
+                            whileHover={qte.result === null ? { scale: 1.1 } : {}}
+                            whileTap={qte.result === null ? { scale: 0.95 } : {}}
                             animate={
                                 qte.result === null
                                     ? {
@@ -463,6 +477,9 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                                         : qte.result === "success"
                                         ? "0 0 30px rgba(34, 197, 94, 0.3)"
                                         : "none",
+                                cursor: qte.result === null ? "pointer" : "default",
+                                userSelect: "none",
+                                WebkitTapHighlightColor: "transparent",
                             }}
                         >
                             {qte.result === "success" ? "✓" : qte.result === "fail" ? "✗" : qte.key}
@@ -477,9 +494,10 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                                         fontSize: 14,
                                         fontWeight: 500,
                                         textShadow: "0 2px 10px rgba(0,0,0,0.8)",
+                                        userSelect: "none",
                                     }}
                                 >
-                                    按 <span style={{ color: "#F59E0B", fontWeight: 700 }}>{qte.key}</span>
+                                    按 / 點擊 <span style={{ color: "#F59E0B", fontWeight: 700 }}>{qte.key}</span>
                                 </div>
 
                                 {/* 倒數條 */}
@@ -520,7 +538,9 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                         x={video.x}
                         y={video.y}
                         showCloseButton={video.showClose}
-                        onClose={() => removePopupVideo(video.id)}
+                        autoCloseOnEnd={video.autoCloseOnEnd}
+                        loop={video.loop}
+                        onClose={() => removePopupVideo(video.id, video.isDistraction)} // 只有干擾影片關閉才 +1 分
                     />
                 ))}
             </AnimatePresence>

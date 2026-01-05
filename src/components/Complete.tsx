@@ -15,9 +15,10 @@ export function Complete({ onRestart }: CompleteProps) {
         alignItems: 'center',
         justifyContent: 'center',
         background: '#0A0A0F',
-        gap: 30,
+        gap: 24,
         position: 'relative',
         overflow: 'hidden',
+        padding: 20,
       }}
     >
       {/* Ambient celebration glow */}
@@ -62,58 +63,65 @@ export function Complete({ onRestart }: CompleteProps) {
         挑戰成功
       </motion.div>
 
-      <motion.div
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
-        style={{
-          width: 120,
-          height: 120,
-          background: 'rgba(245, 158, 11, 0.15)',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 64,
-          boxShadow: '0 0 60px rgba(245, 158, 11, 0.2)',
-        }}
-      >
-        🎉
-      </motion.div>
-
       <motion.h1
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.2 }}
         style={{
           color: '#FAFAFA',
-          fontSize: 56,
+          fontSize: 40,
           fontWeight: 700,
           fontFamily: '"Space Grotesk", system-ui, sans-serif',
           letterSpacing: '-0.025em',
+          textAlign: 'center',
         }}
       >
-        挑戰完成！
+        恭喜完成所有挑戰！
       </motion.h1>
 
+      {/* 2026 新年目標圖片 */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
+        style={{
+          borderRadius: 16,
+          overflow: 'hidden',
+          border: '2px solid rgba(245, 158, 11, 0.3)',
+          boxShadow: '0 0 60px rgba(245, 158, 11, 0.2), 0 20px 50px rgba(0,0,0,0.5)',
+        }}
+      >
+        <img
+          src="/assets/images/2026新年目標.jpg"
+          alt="2026 新年目標"
+          style={{
+            maxWidth: '90vw',
+            maxHeight: '50vh',
+            display: 'block',
+          }}
+        />
+      </motion.div>
+
+      {/* 希望他要做到 */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.6 }}
         style={{
-          color: '#71717A',
-          fontSize: 18,
+          color: '#F59E0B',
+          fontSize: 24,
+          fontWeight: 600,
           textAlign: 'center',
-          maxWidth: 400,
+          textShadow: '0 0 20px rgba(245, 158, 11, 0.3)',
         }}
       >
-        恭喜你成功完成了所有關卡！
+        希望他要做到！
       </motion.p>
 
       <motion.button
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.8 }}
         whileHover={{
           scale: 1.02,
           borderColor: 'rgba(255,255,255,0.25)',
@@ -122,9 +130,9 @@ export function Complete({ onRestart }: CompleteProps) {
         whileTap={{ scale: 0.98 }}
         onClick={onRestart}
         style={{
-          marginTop: 20,
-          padding: '16px 48px',
-          fontSize: 18,
+          marginTop: 10,
+          padding: '14px 40px',
+          fontSize: 16,
           fontWeight: 500,
           color: '#FAFAFA',
           background: 'transparent',
@@ -136,6 +144,27 @@ export function Complete({ onRestart }: CompleteProps) {
       >
         再玩一次
       </motion.button>
+
+      {/* Footer */}
+      <motion.a
+        href="https://www.instagram.com/naked_logic"
+        target="_blank"
+        rel="noopener noreferrer"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        style={{
+          position: 'absolute',
+          bottom: 20,
+          color: '#52525B',
+          fontSize: 12,
+          textDecoration: 'none',
+          transition: 'color 200ms ease-out',
+        }}
+        whileHover={{ color: '#F59E0B' }}
+      >
+        made by @naked_logic
+      </motion.a>
     </div>
   )
 }

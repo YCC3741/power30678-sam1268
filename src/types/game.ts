@@ -13,7 +13,7 @@ export interface QTEEvent {
   duration: number  // 反應時間（毫秒）
 }
 
-export type GameStage = 'menu' | 'memory' | 'qte' | 'complete'
+export type GameStage = 'menu' | 'memory' | 'qte' | 'drag' | 'complete' | 'gameover'
 
 export interface GameState {
   stage: GameStage

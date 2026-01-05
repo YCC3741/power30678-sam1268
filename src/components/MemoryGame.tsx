@@ -6,7 +6,7 @@ import { useAudio } from "../hooks/useAudio";
 // 動態載入素材
 const ASSETS = [
     { id: "1", image: "/assets/images/22222.png", sound: "/assets/sounds/22222.mp3" },
-    { id: "2", image: "/assets/images/獲得華.png", sound: "/sound/獲得華.mp3" },
+    { id: "2", image: "/assets/images/獲得華.png", sound: "/assets/sounds/獲得華.mp3" },
     { id: "3", image: "/assets/images/MC.png", sound: "/assets/sounds/MC.mp3" },
     { id: "4", image: "/assets/images/RRRRRR.png", sound: "/assets/sounds/RRRRRR.mp3" },
     { id: "5", image: "/assets/images/超負荷挺toyz.png", sound: "/assets/sounds/超負荷挺toyz.mp3" },
@@ -15,18 +15,22 @@ const ASSETS = [
 
 interface MemoryGameProps {
     onComplete: () => void;
+    onFail: () => void;
+    maxFails?: number; // 最多可失敗次數，預設 3
 }
 
 // 失敗時隨機播放的影片
 const FAIL_VIDEOS = ["/溝通溝通.mp4", "/哭蕊宿頭.mp4"];
 
-export function MemoryGame({ onComplete }: MemoryGameProps) {
+export function MemoryGame({ onComplete, onFail, maxFails = 3 }: MemoryGameProps) {
     const [cards, setCards] = useState<Card[]>([]);
     const [flippedCards, setFlippedCards] = useState<number[]>([]);
     const [isChecking, setIsChecking] = useState(false);
     const [matchedCount, setMatchedCount] = useState(0);
+    const [failCount, setFailCount] = useState(0); // 失敗次數
     const [showFailVideo, setShowFailVideo] = useState(false);
     const [failVideoSrc, setFailVideoSrc] = useState("");
+    const [failVideoKey, setFailVideoKey] = useState(0); // 用來強制重新渲染影片
     const failVideoRef = useRef<HTMLVideoElement>(null);
     const { play } = useAudio();
 
@@ -60,7 +64,7 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
 
     // 檢查配對
     useEffect(() => {
-        if (flippedCards.length === 2) {
+        if (flippedCards.length === 2 && !isChecking) {
             setIsChecking(true);
             const [first, second] = flippedCards;
             const firstCard = cards.find((c) => c.id === first);
@@ -79,14 +83,30 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                     setIsChecking(false);
                 }, 800);
             } else {
-                // 配對失敗 - 顯示飛出的影片（隨機選擇）
-                const randomVideo = FAIL_VIDEOS[Math.floor(Math.random() * FAIL_VIDEOS.length)];
-                setFailVideoSrc(randomVideo);
-                setTimeout(() => {
-                    setShowFailVideo(true);
-                }, 500);
+                // 配對失敗 - 使用函數形式更新 failCount，避免依賴 failCount 狀態
+                setFailCount((prevFailCount) => {
+                    const newFailCount = prevFailCount + 1;
 
-                // 翻回卡片並隱藏影片
+                    // 檢查是否超過失敗次數
+                    if (newFailCount >= maxFails) {
+                        // 遊戲失敗
+                        setTimeout(() => {
+                            onFail();
+                        }, 800);
+                    } else {
+                        // 顯示飛出的影片（隨機選擇）
+                        const randomVideo = FAIL_VIDEOS[Math.floor(Math.random() * FAIL_VIDEOS.length)];
+                        setFailVideoSrc(randomVideo);
+                        setFailVideoKey((prev) => prev + 1); // 強制重新渲染
+                        setTimeout(() => {
+                            setShowFailVideo(true);
+                        }, 300);
+                    }
+
+                    return newFailCount;
+                });
+
+                // 翻回卡片並隱藏影片 - 減少延遲時間
                 setTimeout(() => {
                     setCards((prev) =>
                         prev.map((card) =>
@@ -96,10 +116,10 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                     setFlippedCards([]);
                     setIsChecking(false);
                     setShowFailVideo(false);
-                }, 4500);
+                }, 1500);
             }
         }
-    }, [flippedCards, cards]);
+    }, [flippedCards, cards, isChecking, maxFails, onFail]);
 
     // 檢查是否完成
     useEffect(() => {
@@ -136,7 +156,7 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                 alignItems: "center",
                 justifyContent: "center",
                 background: "#0A0A0F",
-                gap: 30,
+                gap: 16,
                 overflow: "hidden",
                 position: "relative",
             }}
@@ -155,46 +175,87 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                 }}
             />
 
-            {/* Level badge */}
+            {/* Header row - badge + 剩餘機會 */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 8,
-                    padding: "6px 14px",
-                    background: "rgba(245, 158, 11, 0.1)",
-                    border: "1px solid rgba(245, 158, 11, 0.2)",
-                    borderRadius: 9999,
-                    fontSize: 13,
-                    color: "#F59E0B",
-                    fontWeight: 500,
+                    gap: 16,
                 }}
             >
-                第一關
-            </motion.div>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "6px 14px",
+                        background: "rgba(245, 158, 11, 0.1)",
+                        border: "1px solid rgba(245, 158, 11, 0.2)",
+                        borderRadius: 9999,
+                        fontSize: 13,
+                        color: "#F59E0B",
+                        fontWeight: 500,
+                    }}
+                >
+                    第一關：記憶配對
+                </div>
 
-            <motion.h2
-                initial={{ opacity: 0, y: -30 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{
-                    color: "#FAFAFA",
-                    fontSize: 40,
-                    fontWeight: 700,
-                    fontFamily: '"Space Grotesk", system-ui, sans-serif',
-                    letterSpacing: "-0.025em",
-                }}
-            >
-                記憶配對
-            </motion.h2>
+                {/* 剩餘機會 - 移到標題旁邊 */}
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "6px 14px",
+                        background: failCount >= maxFails - 1 ? "rgba(239, 68, 68, 0.15)" : "rgba(26, 26, 36, 0.6)",
+                        border:
+                            failCount >= maxFails - 1
+                                ? "1px solid rgba(239, 68, 68, 0.3)"
+                                : "1px solid rgba(255, 255, 255, 0.08)",
+                        borderRadius: 9999,
+                        fontSize: 13,
+                        transition: "all 300ms ease-out",
+                    }}
+                >
+                    <span style={{ color: "#71717A" }}>剩餘機會</span>
+                    <span
+                        style={{
+                            color: failCount >= maxFails - 1 ? "#EF4444" : "#22C55E",
+                            fontWeight: 600,
+                        }}
+                    >
+                        {maxFails - failCount}
+                    </span>
+                </div>
+
+                {/* 配對進度 */}
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "6px 14px",
+                        background: "rgba(26, 26, 36, 0.6)",
+                        border: "1px solid rgba(255, 255, 255, 0.08)",
+                        borderRadius: 9999,
+                        fontSize: 13,
+                    }}
+                >
+                    <span style={{ color: "#71717A" }}>配對</span>
+                    <span style={{ color: "#F59E0B", fontWeight: 600 }}>
+                        {matchedCount}/{ASSETS.length}
+                    </span>
+                </div>
+            </motion.div>
 
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: 20,
-                    padding: 20,
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gap: 12,
+                    padding: 10,
                 }}
             >
                 <AnimatePresence>
@@ -211,8 +272,8 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                             whileTap={!card.isFlipped && !card.isMatched ? { scale: 0.95 } : {}}
                             onClick={() => handleCardClick(card)}
                             style={{
-                                width: 180,
-                                height: 180,
+                                width: 140,
+                                height: 140,
                                 cursor: card.isFlipped || card.isMatched ? "default" : "pointer",
                                 perspective: 1000,
                                 transformStyle: "preserve-3d",
@@ -270,33 +331,11 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                 </AnimatePresence>
             </div>
 
-            {/* Progress indicator */}
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    padding: "12px 24px",
-                    background: "rgba(26, 26, 36, 0.6)",
-                    backdropFilter: "blur(8px)",
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
-                    borderRadius: 9999,
-                }}
-            >
-                <span style={{ color: "#71717A", fontSize: 14 }}>配對進度</span>
-                <span style={{ color: "#F59E0B", fontSize: 18, fontWeight: 600 }}>
-                    {matchedCount}
-                </span>
-                <span style={{ color: "#71717A", fontSize: 14 }}>/</span>
-                <span style={{ color: "#FAFAFA", fontSize: 18, fontWeight: 600 }}>
-                    {ASSETS.length}
-                </span>
-            </div>
-
             {/* 配對失敗時飛出的影片 */}
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
                 {showFailVideo && (
                     <motion.div
+                        key={failVideoKey}
                         initial={{ y: "100vh", x: "-50%" }}
                         animate={{ y: "-100vh" }}
                         exit={{ opacity: 0 }}
@@ -313,12 +352,13 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                         }}
                     >
                         <video
+                            key={failVideoKey}
                             ref={failVideoRef}
                             src={failVideoSrc}
                             autoPlay
                             muted={false}
                             style={{
-                                width: 400,
+                                width: 280,
                                 height: "auto",
                             }}
                             playsInline

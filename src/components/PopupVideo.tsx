@@ -7,9 +7,11 @@ interface PopupVideoProps {
   y: number
   onClose?: () => void
   showCloseButton?: boolean
+  autoCloseOnEnd?: boolean // 影片播完自動關閉
+  loop?: boolean // 是否循環播放
 }
 
-export function PopupVideo({ src, x, y, onClose, showCloseButton = false }: PopupVideoProps) {
+export function PopupVideo({ src, x, y, onClose, showCloseButton = false, autoCloseOnEnd = false, loop = false }: PopupVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
@@ -17,6 +19,18 @@ export function PopupVideo({ src, x, y, onClose, showCloseButton = false }: Popu
       videoRef.current.play().catch(() => {})
     }
   }, [])
+
+  // 影片播完自動關閉
+  useEffect(() => {
+    if (!autoCloseOnEnd || !videoRef.current) return
+
+    const video = videoRef.current
+    const handleEnded = () => {
+      onClose?.()
+    }
+    video.addEventListener('ended', handleEnded)
+    return () => video.removeEventListener('ended', handleEnded)
+  }, [autoCloseOnEnd, onClose])
 
   return (
     <motion.div
@@ -68,7 +82,7 @@ export function PopupVideo({ src, x, y, onClose, showCloseButton = false }: Popu
       <video
         ref={videoRef}
         src={src}
-        loop
+        loop={loop}
         playsInline
         style={{
           width: 280,

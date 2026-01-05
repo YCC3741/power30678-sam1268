@@ -39,6 +39,17 @@ html, body, #root {
   background: var(--background);
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--foreground);
+  /* Mobile support */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent zoom on double-tap for iOS */
+button, a, [role="button"] {
+  touch-action: manipulation;
 }
 
 /* Ambient background noise texture */

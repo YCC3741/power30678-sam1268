@@ -108,42 +108,61 @@ export function Menu({ onStart }: MenuProps) {
                 <div
                     style={{
                         display: "flex",
-                        gap: 20,
+                        gap: 16,
+                        flexWrap: "wrap",
+                        justifyContent: "center",
                     }}
                 >
                     <motion.div
                         whileHover={{ scale: 1.02, borderColor: "rgba(255,255,255,0.15)" }}
                         style={{
-                            padding: "20px 32px",
+                            padding: "16px 24px",
                             background: "rgba(26, 26, 36, 0.6)",
                             backdropFilter: "blur(8px)",
                             border: "1px solid rgba(255, 255, 255, 0.08)",
                             borderRadius: 12,
                             color: "#FAFAFA",
-                            fontSize: 18,
+                            fontSize: 16,
                             transition: "all 300ms ease-out",
                         }}
                     >
                         <span style={{ color: "#F59E0B", fontWeight: 600 }}>第一關</span>
-                        <span style={{ color: "#71717A", margin: "0 12px" }}>·</span>
+                        <span style={{ color: "#71717A", margin: "0 10px" }}>·</span>
                         記憶配對
                     </motion.div>
                     <motion.div
                         whileHover={{ scale: 1.02, borderColor: "rgba(255,255,255,0.15)" }}
                         style={{
-                            padding: "20px 32px",
+                            padding: "16px 24px",
                             background: "rgba(26, 26, 36, 0.6)",
                             backdropFilter: "blur(8px)",
                             border: "1px solid rgba(255, 255, 255, 0.08)",
                             borderRadius: 12,
                             color: "#FAFAFA",
-                            fontSize: 18,
+                            fontSize: 16,
                             transition: "all 300ms ease-out",
                         }}
                     >
                         <span style={{ color: "#F59E0B", fontWeight: 600 }}>第二關</span>
-                        <span style={{ color: "#71717A", margin: "0 12px" }}>·</span>
+                        <span style={{ color: "#71717A", margin: "0 10px" }}>·</span>
                         QTE 挑戰
+                    </motion.div>
+                    <motion.div
+                        whileHover={{ scale: 1.02, borderColor: "rgba(255,255,255,0.15)" }}
+                        style={{
+                            padding: "16px 24px",
+                            background: "rgba(26, 26, 36, 0.6)",
+                            backdropFilter: "blur(8px)",
+                            border: "1px solid rgba(255, 255, 255, 0.08)",
+                            borderRadius: 12,
+                            color: "#FAFAFA",
+                            fontSize: 16,
+                            transition: "all 300ms ease-out",
+                        }}
+                    >
+                        <span style={{ color: "#F59E0B", fontWeight: 600 }}>第三關</span>
+                        <span style={{ color: "#71717A", margin: "0 10px" }}>·</span>
+                        拉影片挑戰
                     </motion.div>
                 </div>
             </motion.div>
@@ -188,6 +207,27 @@ export function Menu({ onStart }: MenuProps) {
             >
                 按下按鈕開始你的挑戰
             </motion.p>
+
+            {/* Footer */}
+            <motion.a
+                href="https://www.instagram.com/naked_logic"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                style={{
+                    position: "absolute",
+                    bottom: 20,
+                    color: "#52525B",
+                    fontSize: 12,
+                    textDecoration: "none",
+                    transition: "color 200ms ease-out",
+                }}
+                whileHover={{ color: "#F59E0B" }}
+            >
+                made by @naked_logic
+            </motion.a>
         </div>
     );
 }
