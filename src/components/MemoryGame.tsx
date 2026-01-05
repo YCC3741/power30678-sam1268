@@ -17,12 +17,16 @@ interface MemoryGameProps {
     onComplete: () => void;
 }
 
+// 失敗時隨機播放的影片
+const FAIL_VIDEOS = ["/溝通溝通.mp4", "/哭蕊宿頭.mp4"];
+
 export function MemoryGame({ onComplete }: MemoryGameProps) {
     const [cards, setCards] = useState<Card[]>([]);
     const [flippedCards, setFlippedCards] = useState<number[]>([]);
     const [isChecking, setIsChecking] = useState(false);
     const [matchedCount, setMatchedCount] = useState(0);
     const [showFailVideo, setShowFailVideo] = useState(false);
+    const [failVideoSrc, setFailVideoSrc] = useState("");
     const failVideoRef = useRef<HTMLVideoElement>(null);
     const { play } = useAudio();
 
@@ -75,13 +79,11 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                     setIsChecking(false);
                 }, 800);
             } else {
-                // 配對失敗 - 顯示飛出的影片
+                // 配對失敗 - 顯示飛出的影片（隨機選擇）
+                const randomVideo = FAIL_VIDEOS[Math.floor(Math.random() * FAIL_VIDEOS.length)];
+                setFailVideoSrc(randomVideo);
                 setTimeout(() => {
                     setShowFailVideo(true);
-                    if (failVideoRef.current) {
-                        failVideoRef.current.currentTime = 0;
-                        failVideoRef.current.play();
-                    }
                 }, 500);
 
                 // 翻回卡片並隱藏影片
@@ -94,7 +96,7 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                     setFlippedCards([]);
                     setIsChecking(false);
                     setShowFailVideo(false);
-                }, 2500);
+                }, 4500);
             }
         }
     }, [flippedCards, cards]);
@@ -133,22 +135,58 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "linear-gradient(135deg, #2d3436 0%, #000000 100%)",
+                background: "#0A0A0F",
                 gap: 30,
                 overflow: "hidden",
                 position: "relative",
             }}
         >
+            {/* Ambient glow */}
+            <div
+                style={{
+                    position: "absolute",
+                    top: "-10%",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: 600,
+                    height: 400,
+                    background: "radial-gradient(ellipse, rgba(245, 158, 11, 0.06) 0%, transparent 70%)",
+                    pointerEvents: "none",
+                }}
+            />
+
+            {/* Level badge */}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "6px 14px",
+                    background: "rgba(245, 158, 11, 0.1)",
+                    border: "1px solid rgba(245, 158, 11, 0.2)",
+                    borderRadius: 9999,
+                    fontSize: 13,
+                    color: "#F59E0B",
+                    fontWeight: 500,
+                }}
+            >
+                第一關
+            </motion.div>
+
             <motion.h2
                 initial={{ opacity: 0, y: -30 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{
-                    color: "#fff",
-                    fontSize: 36,
-                    fontWeight: "bold",
+                    color: "#FAFAFA",
+                    fontSize: 40,
+                    fontWeight: 700,
+                    fontFamily: '"Space Grotesk", system-ui, sans-serif',
+                    letterSpacing: "-0.025em",
                 }}
             >
-                第一關：記憶配對
+                記憶配對
             </motion.h2>
 
             <div
@@ -180,19 +218,22 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                                 transformStyle: "preserve-3d",
                             }}
                         >
-                            {/* 卡片背面 */}
+                            {/* 卡片背面 - Glass effect */}
                             <div
                                 style={{
                                     position: "absolute",
                                     width: "100%",
                                     height: "100%",
                                     backfaceVisibility: "hidden",
-                                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                                    borderRadius: 15,
+                                    background: "rgba(26, 26, 36, 0.8)",
+                                    backdropFilter: "blur(8px)",
+                                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                                    borderRadius: 12,
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    fontSize: 48,
+                                    fontSize: 42,
+                                    color: "#F59E0B",
                                     boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
                                 }}
                             >
@@ -207,10 +248,11 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                                     height: "100%",
                                     backfaceVisibility: "hidden",
                                     transform: "rotateY(180deg)",
-                                    background: "#fff",
-                                    borderRadius: 15,
+                                    background: "#1A1A24",
+                                    border: "1px solid rgba(245, 158, 11, 0.2)",
+                                    borderRadius: 12,
                                     overflow: "hidden",
-                                    boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+                                    boxShadow: "0 10px 30px rgba(0,0,0,0.3), 0 0 20px rgba(245, 158, 11, 0.1)",
                                 }}
                             >
                                 <img
@@ -228,13 +270,27 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                 </AnimatePresence>
             </div>
 
+            {/* Progress indicator */}
             <div
                 style={{
-                    color: "rgba(255,255,255,0.7)",
-                    fontSize: 20,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "12px 24px",
+                    background: "rgba(26, 26, 36, 0.6)",
+                    backdropFilter: "blur(8px)",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    borderRadius: 9999,
                 }}
             >
-                配對進度：{matchedCount} / {ASSETS.length}
+                <span style={{ color: "#71717A", fontSize: 14 }}>配對進度</span>
+                <span style={{ color: "#F59E0B", fontSize: 18, fontWeight: 600 }}>
+                    {matchedCount}
+                </span>
+                <span style={{ color: "#71717A", fontSize: 14 }}>/</span>
+                <span style={{ color: "#FAFAFA", fontSize: 18, fontWeight: 600 }}>
+                    {ASSETS.length}
+                </span>
             </div>
 
             {/* 配對失敗時飛出的影片 */}
@@ -244,20 +300,23 @@ export function MemoryGame({ onComplete }: MemoryGameProps) {
                         initial={{ y: "100vh", x: "-50%" }}
                         animate={{ y: "-100vh" }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 1.5, ease: "easeIn" }}
+                        transition={{ duration: 4, ease: "linear" }}
                         style={{
                             position: "fixed",
                             left: "50%",
                             bottom: 0,
                             zIndex: 100,
-                            borderRadius: 10,
+                            borderRadius: 12,
                             overflow: "hidden",
-                            boxShadow: "0 0 50px rgba(255,0,0,0.5)",
+                            border: "1px solid rgba(245, 158, 11, 0.3)",
+                            boxShadow: "0 0 60px rgba(245, 158, 11, 0.3), 0 20px 40px rgba(0,0,0,0.5)",
                         }}
                     >
                         <video
                             ref={failVideoRef}
-                            src="/溝通溝通.mp4"
+                            src={failVideoSrc}
+                            autoPlay
+                            muted={false}
                             style={{
                                 width: 400,
                                 height: "auto",
