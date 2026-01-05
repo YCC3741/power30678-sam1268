@@ -31,6 +31,8 @@ const QTE_EVENTS: QTEEvent[] = [
     { time: 42.1, key: "", duration: 1500 },
     { time: 42.2, key: "", duration: 2000 },
     { time: 42.3, key: "", duration: 2800 },
+    // 補一個事件以確保可達 20 分
+    { time: 42.35, key: "", duration: 2400 },
 ];
 
 // 干擾影片出現的時間點（秒）- 更密集
@@ -40,8 +42,9 @@ const DISTRACTION_TIMES = [5, 10, 16, 22, 30, 37, 44];
 const DISTRACTION_VIDEOS = ["/溝通溝通.mp4", "/哭蕊宿頭.mp4"];
 
 // 失敗時顯示的影片
-const FAIL_VIDEOS = ["/哭蕊宿頭.mp4", "/溝通溝通.mp4"];
+// const FAIL_VIDEOS = ["/哭蕊宿頭.mp4", "/溝通溝通.mp4"];
 
+const FAIL_VIDEOS = ["/太LOW了.mp4"];
 function getRandomLetter(): string {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     return letters[Math.floor(Math.random() * letters.length)];
@@ -101,6 +104,7 @@ export function QTEGame({ onComplete }: QTEGameProps) {
     const [completedQTEs, setCompletedQTEs] = useState<number[]>([]);
     const [triggeredDistractions, setTriggeredDistractions] = useState<number[]>([]);
     const [popupVideos, setPopupVideos] = useState<PopupVideoState[]>([]);
+    const [score, setScore] = useState(0);
 
     const qteTimersRef = useRef<Map<number, { timeout: number; interval: number }>>(new Map());
     const popupIdRef = useRef(0);
@@ -164,6 +168,14 @@ export function QTEGame({ onComplete }: QTEGameProps) {
 
         setActiveQTEs((prev) => prev.map((qte) => (qte.index === index ? { ...qte, result: "success" } : qte)));
         setCompletedQTEs((prev) => [...prev, index]);
+        // 累積分數，達到 30 分立即過關
+        setScore((prev) => {
+            const next = prev + 1;
+            if (next >= 20) {
+                onComplete();
+            }
+            return next;
+        });
 
         // 移除這個 QTE
         setTimeout(() => {
@@ -371,6 +383,9 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                 >
                     QTE 挑戰
                 </motion.h2>
+                <div style={{ color: "#D4D4D8", fontSize: 14 }}>
+                    分數：<span style={{ color: "#F59E0B", fontWeight: 700 }}>{score}</span> / 20
+                </div>
             </div>
 
             {/* 影片播放器 */}
@@ -378,6 +393,9 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                 ref={videoRef}
                 src="/超負荷挺Toyz.mp4"
                 autoPlay
+                onLoadedMetadata={() => {
+                    if (videoRef.current) videoRef.current.volume = 0.35;
+                }}
                 style={{
                     maxWidth: "85%",
                     maxHeight: "75%",
@@ -430,9 +448,7 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                                         : qte.result === "fail"
                                         ? "#1A1A24"
                                         : "#F59E0B",
-                                border: qte.result === "fail"
-                                    ? "1px solid rgba(255,255,255,0.1)"
-                                    : "none",
+                                border: qte.result === "fail" ? "1px solid rgba(255,255,255,0.1)" : "none",
                                 borderRadius: 12,
                                 display: "flex",
                                 alignItems: "center",
@@ -441,11 +457,12 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                                 fontWeight: 700,
                                 fontFamily: '"Space Grotesk", system-ui, sans-serif',
                                 color: qte.result === "fail" ? "#71717A" : "#0A0A0F",
-                                boxShadow: qte.result === null
-                                    ? "0 0 30px rgba(245, 158, 11, 0.3)"
-                                    : qte.result === "success"
-                                    ? "0 0 30px rgba(34, 197, 94, 0.3)"
-                                    : "none",
+                                boxShadow:
+                                    qte.result === null
+                                        ? "0 0 30px rgba(245, 158, 11, 0.3)"
+                                        : qte.result === "success"
+                                        ? "0 0 30px rgba(34, 197, 94, 0.3)"
+                                        : "none",
                             }}
                         >
                             {qte.result === "success" ? "✓" : qte.result === "fail" ? "✗" : qte.key}
@@ -481,9 +498,10 @@ export function QTEGame({ onComplete }: QTEGameProps) {
                                             height: "100%",
                                             background: qte.timeLeft > 500 ? "#F59E0B" : "#EF4444",
                                             width: `${(qte.timeLeft / qte.duration) * 100}%`,
-                                            boxShadow: qte.timeLeft > 500
-                                                ? "0 0 10px rgba(245, 158, 11, 0.5)"
-                                                : "0 0 10px rgba(239, 68, 68, 0.5)",
+                                            boxShadow:
+                                                qte.timeLeft > 500
+                                                    ? "0 0 10px rgba(245, 158, 11, 0.5)"
+                                                    : "0 0 10px rgba(239, 68, 68, 0.5)",
                                         }}
                                     />
                                 </div>
