@@ -8,8 +8,11 @@ import { Complete } from "./components/Complete";
 import { GameOver } from "./components/GameOver";
 import { GameStage } from "./types/game";
 import { Dialog } from "./components/Dialog";
+import { LoadingScreen } from "./components/LoadingScreen";
+import { useVideoPreloader } from "./hooks/useVideoPreloader";
 
 function App() {
+    const { isLoading, progress, loadedCount, totalCount } = useVideoPreloader();
     const [stage, setStage] = useState<GameStage>("menu");
     const [showMemoryDialog, setShowMemoryDialog] = useState(false);
     const [showQteDialog, setShowQteDialog] = useState(false);
@@ -50,6 +53,11 @@ function App() {
         setStage("memory");
         setShowMemoryDialog(true);
     };
+
+    // 顯示載入畫面
+    if (isLoading) {
+        return <LoadingScreen progress={progress} loadedCount={loadedCount} totalCount={totalCount} />;
+    }
 
     return (
         <AnimatePresence mode="wait">
