@@ -2,12 +2,12 @@
 
 覺得很靠北的話 可以小小追蹤一下嗎 :D
 
-專案大小會稍微大一點 因為把所有素材都放進來了
-
-可能會有點 latency 因為是放在 vercel hk
-
 [Instagram](https://www.instagram.com/naked_logic/)
 
 [Youtube](https://www.youtube.com/@%E4%BD%8E%E9%9A%8E%E6%80%9D%E7%B6%AD)
+
+專案大小會稍微大一點 因為把所有素材都放進來了
+
+可能會有點 latency 因為是放在 vercel hk
 
 <img width="863" height="296" alt="哭蕊宿頭" src="https://github.com/user-attachments/assets/613168bc-200e-40bf-b7af-9c0d12e276c2" />
