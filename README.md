@@ -4,6 +4,8 @@
 
 專案大小會稍微大一點 因為把所有素材都放進來了
 
+可能會有點 latency 因為是放在 vercel hk
+
 [Instagram](https://www.instagram.com/naked_logic/)
 
 [Youtube](https://www.youtube.com/@%E4%BD%8E%E9%9A%8E%E6%80%9D%E7%B6%AD)
