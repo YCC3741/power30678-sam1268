@@ -99,6 +99,23 @@ export function Menu({ onStart }: MenuProps) {
                 超負荷挺Toyz
             </motion.h1>
 
+            {/* 建議開聲音並用電腦版遊玩 體驗較佳 */}
+            <motion.h2
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                style={{
+                    color: "#ffffff",
+                    fontSize: "clamp(16px, 3vw, 20px)",
+                    fontWeight: 500,
+                    fontFamily: '"Space Grotesk", system-ui, sans-serif',
+                    letterSpacing: "-0.025em",
+                    textAlign: "center",
+                    margin: 0,
+                }}
+            >
+                建議開聲音並用電腦遊玩 體驗較佳
+            </motion.h2>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
