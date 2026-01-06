@@ -196,7 +196,7 @@ export function Complete({ onRestart }: CompleteProps) {
                 whileTap={{ scale: 0.98 }}
                 onClick={onRestart}
                 style={{
-                    marginTop: isMobile ? 5 : 10,
+                    marginTop: isMobile ? 5 : 0,
                     padding: isMobile ? "10px 28px" : "14px 40px",
                     fontSize: isMobile ? 14 : 16,
                     fontWeight: 500,

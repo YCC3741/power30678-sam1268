@@ -177,34 +177,19 @@ export function Menu({ onStart }: MenuProps) {
                 開始遊戲
             </motion.button>
 
-            {/* Subtle hint */}
-            <motion.p
+            {/* Footer - 取代原本的 hint */}
+            <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
                 style={{
-                    color: "#71717A",
-                    fontSize: "clamp(12px, 3vw, 14px)",
-                    marginTop: 10,
-                }}
-            >
-                按下按鈕開始你的挑戰
-            </motion.p>
-
-            {/* Footer */}
-            <div
-                style={{
-                    position: "absolute",
-                    bottom: "clamp(10px, 2vh, 20px)",
-                    left: "50%",
-                    transform: "translateX(-50%)",
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
                     gap: 12,
                     flexWrap: "wrap",
                     justifyContent: "center",
-                    zIndex: 100,
+                    marginTop: 10,
                     padding: "0 10px",
                 }}
             >
@@ -212,9 +197,6 @@ export function Menu({ onStart }: MenuProps) {
                     href="https://www.instagram.com/naked_logic"
                     target="_blank"
                     rel="noopener noreferrer"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
                     style={{
                         color: "yellow",
                         fontSize: "clamp(10px, 2.5vw, 12px)",
@@ -225,24 +207,18 @@ export function Menu({ onStart }: MenuProps) {
                 >
                     made by @naked_logic
                 </motion.a>
-                <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
+                <span
                     style={{
                         color: "#71717A",
                         fontSize: "clamp(10px, 2.5vw, 12px)",
                     }}
                 >
                     ·
-                </motion.span>
+                </span>
                 <motion.a
                     href="https://github.com/WeiYun0912/power30678-sam1268"
                     target="_blank"
                     rel="noopener noreferrer"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.1 }}
                     style={{
                         color: "#71717A",
                         fontSize: "clamp(10px, 2.5vw, 12px)",
@@ -253,7 +229,7 @@ export function Menu({ onStart }: MenuProps) {
                 >
                     GitHub 原始碼
                 </motion.a>
-            </div>
+            </motion.div>
         </div>
     );
 }
