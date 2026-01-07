@@ -222,7 +222,7 @@ export function Menu({ onStart }: MenuProps) {
                     }}
                     whileHover={{ color: "#F59E0B" }}
                 >
-                    made by @naked_logic
+                    made by @低階思維
                 </motion.a>
                 <span
                     style={{

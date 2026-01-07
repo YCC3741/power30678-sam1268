@@ -246,7 +246,7 @@ export function Complete({ onRestart }: CompleteProps) {
                     }}
                     whileHover={{ color: "#F59E0B" }}
                 >
-                    made by @naked_logic
+                    made by @低階思維
                 </motion.a>
                 <motion.span
                     initial={{ opacity: 0 }}
