@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 
-const BASE = import.meta.env.BASE_URL
+const BASE = import.meta.env.BASE_URL;
 
 interface CompleteProps {
     onRestart: () => void;
@@ -241,12 +241,12 @@ export function Complete({ onRestart }: CompleteProps) {
                     style={{
                         color: "yellow",
                         fontSize: isMobile ? 10 : 12,
-                        textDecoration: "none",
+                        textDecoration: "underline",
                         transition: "color 200ms ease-out",
                     }}
                     whileHover={{ color: "#F59E0B" }}
                 >
-                    made by @低階思維
+                    made by @低階思維 覺得很靠北的話可以點進來看一下下嗎
                 </motion.a>
                 <motion.span
                     initial={{ opacity: 0 }}

@@ -218,12 +218,12 @@ export function Menu({ onStart }: MenuProps) {
                     style={{
                         color: "yellow",
                         fontSize: "clamp(10px, 2.5vw, 12px)",
-                        textDecoration: "none",
+                        textDecoration: "underline",
                         transition: "color 200ms ease-out",
                     }}
                     whileHover={{ color: "#F59E0B" }}
                 >
-                    made by @低階思維
+                    made by @低階思維 覺得很靠北的話可以點進來看一下下嗎
                 </motion.a>
                 <span
                     style={{

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 
-const BASE = import.meta.env.BASE_URL
+const BASE = import.meta.env.BASE_URL;
 
 interface GameOverProps {
     onRestart: () => void;
@@ -197,7 +197,7 @@ export function GameOver({ onRestart, nextChances }: GameOverProps) {
                     style={{
                         color: "yellow",
                         fontSize: isMobile ? 10 : 12,
-                        textDecoration: "none",
+                        textDecoration: "underline",
                         transition: "color 200ms ease-out",
                     }}
                     whileHover={{ color: "#F59E0B" }}
