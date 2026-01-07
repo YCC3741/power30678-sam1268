@@ -4,6 +4,7 @@ import { Menu } from "./components/Menu";
 import { MemoryGame } from "./components/MemoryGame";
 import { QTEGame } from "./components/QTEGame";
 import { DragGame } from "./components/DragGame";
+import { WhackMoleGame } from "./components/WhackMoleGame";
 import { Complete } from "./components/Complete";
 import { GameOver } from "./components/GameOver";
 import { GameStage } from "./types/game";
@@ -17,6 +18,7 @@ function App() {
     const [showMemoryDialog, setShowMemoryDialog] = useState(false);
     const [showQteDialog, setShowQteDialog] = useState(false);
     const [showDragDialog, setShowDragDialog] = useState(false);
+    const [showWhackDialog, setShowWhackDialog] = useState(false);
     const [memoryMaxFails, setMemoryMaxFails] = useState(3); // 預設 3 次機會
 
     const handleStart = () => {
@@ -41,6 +43,11 @@ function App() {
     };
 
     const handleDragComplete = () => {
+        setStage("whack");
+        setShowWhackDialog(true);
+    };
+
+    const handleWhackComplete = () => {
         setStage("complete");
     };
 
@@ -122,6 +129,25 @@ function App() {
                         />
                     ) : (
                         <DragGame onComplete={handleDragComplete} />
+                    )}
+                </motion.div>
+            )}
+
+            {stage === "whack" && (
+                <motion.div key="whack" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    {showWhackDialog ? (
+                        <Dialog
+                            title="第四關：打館長"
+                            lines={[
+                                "點擊從洞裡冒出的館長！",
+                                "只能打「溝通溝通」或「哭蕊宿頭」+1 分",
+                                "打錯 -1 分，小心別亂打！",
+                                "累積 20 分即可過關。",
+                            ]}
+                            onStart={() => setShowWhackDialog(false)}
+                        />
+                    ) : (
+                        <WhackMoleGame onComplete={handleWhackComplete} />
                     )}
                 </motion.div>
             )}

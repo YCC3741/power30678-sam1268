@@ -143,6 +143,7 @@ export function Menu({ onStart }: MenuProps) {
                         { level: "第一關", name: "記憶配對" },
                         { level: "第二關", name: "QTE 挑戰" },
                         { level: "第三關", name: "拉影片挑戰" },
+                        { level: "第四關", name: "打館長" },
                     ].map((item, i) => (
                         <motion.div
                             key={i}
