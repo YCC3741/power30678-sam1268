@@ -69,10 +69,10 @@ export function DragGame({ onComplete }: DragGameProps) {
     // 播放開場影片
     useEffect(() => {
         if (phase === "intro" && introVideoRef.current) {
-            introVideoRef.current.volume = volume;
-            introVideoRef.current.play().catch(() => {});
-
             const video = introVideoRef.current;
+            video.volume = volume;
+            video.play().catch(() => {});
+
             const handleEnded = () => {
                 // 影片播完直接開始遊戲
                 setPhase("playing");
@@ -80,7 +80,14 @@ export function DragGame({ onComplete }: DragGameProps) {
             video.addEventListener("ended", handleEnded);
             return () => video.removeEventListener("ended", handleEnded);
         }
-    }, [phase, volume]);
+    }, [phase]);
+
+    // 監聽音量變化，更新開場影片音量
+    useEffect(() => {
+        if (phase === "intro" && introVideoRef.current) {
+            introVideoRef.current.volume = volume;
+        }
+    }, [volume, phase]);
 
     // 生成新影片（確保在邊界內）
     const spawnVideo = useCallback(() => {
@@ -567,6 +574,7 @@ function DraggableVideoItem({ video, videoSize, onDragStart, onDragEnd }: Dragga
     const elementRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const dragStartRef = useRef({ mouseX: 0, mouseY: 0, elemX: 0, elemY: 0 });
+    const { volume } = useVolume();
 
     useEffect(() => {
         if (videoRef.current) {

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useVolume } from "../contexts/VolumeContext";
 
 const BASE = import.meta.env.BASE_URL;
 
